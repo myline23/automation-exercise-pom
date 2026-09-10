@@ -1,5 +1,6 @@
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { CartPage } from './CartPage';
+import { ProductDetailsPage } from './ProductDetailsPage';
 
 export class ProductsPage {
     private readonly page: Page;
@@ -7,6 +8,11 @@ export class ProductsPage {
     private readonly jeansProduct: Locator;
     private readonly continueShoppingButton: Locator;
     private readonly cartLink: Locator;
+    private readonly searchInput: Locator;
+    private readonly searchButton: Locator;
+    private readonly searchedProductsTitle: Locator;
+    private readonly productItems: Locator;
+    private readonly viewProductLink: Locator;
 
     constructor(page: Page) {
         this.page = page;
@@ -18,8 +24,16 @@ export class ProductsPage {
             .getByRole('link', { name: 'Jeans', exact: true });
 
         this.continueShoppingButton = page.getByRole('button', { name: 'Continue Shopping' });
-
         this.cartLink = page.getByRole('link', { name: ' Cart' });
+
+        this.searchInput = page.locator('#search_product');
+
+        this.searchButton = page.locator('#submit_search');
+        this.searchedProductsTitle = page.getByText('Searched Products', { exact: true });
+
+        this.productItems = page.locator('.productinfo');
+
+        this.viewProductLink = page.getByRole('link', { name: 'View Product' });
     }
 
     async selectMenJeans(): Promise<void> {
@@ -53,7 +67,36 @@ export class ProductsPage {
 
     async openCart(): Promise<CartPage> {
         await this.cartLink.click();
-
         return new CartPage(this.page);
     }
+
+    async openProductDetails(): Promise<ProductDetailsPage> {
+        await this.viewProductLink.click();
+        return new ProductDetailsPage(this.page);
+    }
+
+    async searchProduct(productName: string): Promise<void> {
+        await this.searchInput.fill(productName);
+        await this.searchButton.click();
+    }
+
+    async getProductCount(): Promise<number> {
+        return await this.productItems.count();
+    }
+
+    async verifySearchResults(productName: string, expectedCount: number): Promise<void> {
+        await expect(this.searchedProductsTitle).toBeVisible({ timeout: 10000 });
+        await expect(this.productItems).toHaveCount(expectedCount);
+        await expect(this.getProduct(productName)).toBeVisible();
+    }
+
+    async verifyNoSearchResults(): Promise<void> {
+        await expect(this.searchedProductsTitle).toBeVisible();
+        await expect(this.productItems).toHaveCount(0);
+    }
+
+    async verifyEmptySearchResults(initialProductCount: number): Promise<void> {
+    await expect(this.page).toHaveURL(/\/products\?search=$/);
+    await expect(this.productItems).toHaveCount(initialProductCount);
+}
 }

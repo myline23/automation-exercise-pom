@@ -19,6 +19,14 @@ export class CartPage {
         });
     }
 
+    private getRemoveButton(productName: string): Locator {
+        return this.getCartProduct(productName).locator('.cart_quantity_delete');
+    }
+
+    async removeProduct(productName: string): Promise<void> {
+        await this.getRemoveButton(productName).click();
+    }
+
     async verifyCartProductCount(expectedCount: number): Promise<void> {
         await expect(this.cartProducts).toHaveCount(expectedCount);
     }
@@ -53,4 +61,6 @@ export class CartPage {
             await this.verifyProduct(productName, 1, 1);
         }
     }
+
+
 }

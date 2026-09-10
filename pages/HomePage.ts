@@ -17,7 +17,6 @@ export class HomePage {
 
     async navigateToProductsPage(): Promise<ProductsPage> {
         await this.productsButton.click();
-
         return new ProductsPage(this.page);
     }
 }
