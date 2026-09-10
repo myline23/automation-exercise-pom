@@ -1,17 +1,19 @@
 # Automation Exercise - Playwright Test Framework
 
-UI test automation framework built with Playwright and TypeScript using the Page Object Model (POM) design pattern.
+Playwright test automation framework built with TypeScript for end-to-end testing of user flows on the Automation Exercise website.
 
-The automated scenario covers:
-- Navigate to Men's Jeans
-- Add two products to the cart
-- Verify the expected products and quantities
+The project follows the Page Object Model (POM) design pattern.
 
 ## Tech Stack
 
 - Playwright
 - TypeScript
 - Node.js
+- Azure DevOps
+
+## Test Coverage
+
+The test suite covers product navigation, product search, product details, shopping cart operations, and positive and negative search scenarios.
 
 ## Project Structure
 
@@ -22,33 +24,34 @@ The automated scenario covers:
 ├── tests/
 ├── utils/
 ├── playwright.config.ts
+├── azure-pipelines.yml
 └── package.json
 ```
 
-The framework separates test scenarios, page interactions, test data, reusable setup, and supporting utilities.
+Page Objects encapsulate page-specific interactions and assertions.
 
-## Advertisement Handling
+Playwright fixtures provide reusable test setup, including advertisement blocking and initialization of the starting page object.
 
-The website loads third-party advertisements that may interfere with UI interactions. Advertisement-related network requests are blocked through Playwright request interception to keep the automated scenario stable and focused on the application functionality.
+Advertisement-related network requests are blocked because third-party ads on the public website can interfere with UI interactions.
+
+Tests run with a single worker to provide more stable execution against the public third-party website.
 
 ## Setup
 
 Install dependencies and Playwright browsers:
 
 ```bash
-npm install
+npm ci
 npx playwright install
 ```
 
 ## Run Tests
 
-From the command line:
-
 ```bash
-npx playwright test
+npm test
 ```
 
-Tests can also be executed directly from the VS Code Testing panel using the Playwright Test for VSCode extension.
+Tests can also be executed from the VS Code Testing panel using the Playwright Test for VSCode extension.
 
 ## Test Report
 
@@ -57,3 +60,21 @@ Open the Playwright HTML report:
 ```bash
 npx playwright show-report
 ```
+
+The test execution also generates a JUnit XML report used by the CI pipeline.
+
+## CI/CD
+
+The project includes an Azure DevOps pipeline defined in `azure-pipelines.yml`.
+
+The pipeline:
+
+- installs Node.js and project dependencies
+- installs Playwright Chromium and its dependencies
+- executes the Playwright test suite
+- publishes JUnit test results
+- publishes the Playwright HTML report as a pipeline artifact
+
+The pipeline is triggered automatically on pushes to the `master` branch, providing automatic validation of changes committed to the main development branch.
+
+CI execution runs in headless mode, with retries and trace collection enabled to help diagnose potential failures.
