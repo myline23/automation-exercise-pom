@@ -32,7 +32,6 @@ export class ProductsPage {
         this.searchedProductsTitle = page.getByText('Searched Products', { exact: true });
 
         this.productItems = page.locator('.productinfo');
-
         this.viewProductLink = page.getByRole('link', { name: 'View Product' });
     }
 
@@ -50,7 +49,6 @@ export class ProductsPage {
     async addProductToCart(productName: string): Promise<void> {
         const product = this.getProduct(productName);
         const addToCartButton = product.locator('a.add-to-cart');
-
         await addToCartButton.click();
     }
 
@@ -96,7 +94,7 @@ export class ProductsPage {
     }
 
     async verifyEmptySearchResults(initialProductCount: number): Promise<void> {
-    await expect(this.page).toHaveURL(/\/products\?search=$/);
-    await expect(this.productItems).toHaveCount(initialProductCount);
-}
+        await expect(this.page).toHaveURL(/\/products\?search=$/);
+        await expect(this.productItems).toHaveCount(initialProductCount);
+    }
 }

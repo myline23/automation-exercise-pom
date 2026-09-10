@@ -61,6 +61,4 @@ export class CartPage {
             await this.verifyProduct(productName, 1, 1);
         }
     }
-
-
 }
